@@ -47,7 +47,8 @@ app.use(cors({
   origin: [
     process.env.FRONTEND_URL || "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://172.20.0.5:3000" // Docker network IP
+    "http://172.20.0.5:3000", // Docker network IP
+    /https?:\/\/.+\.ngrok-free\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -81,20 +82,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Error handling middleware
-app.use((error, req, res, next) => {
-  console.error('Server Error:', error);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not Found' });
-});
-
 // Initialize database and start server
 async function startServer() {
   try {
@@ -105,6 +92,20 @@ async function startServer() {
     // Setup routes and WebSocket
     await setupRoutes();
     setupWebSocket(io);
+
+    // Error handling middleware (must be registered AFTER routes)
+    app.use((error, req, res, next) => {
+      console.error('Server Error:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+      });
+    });
+
+    // 404 handler (registered AFTER routes)
+    app.use((req, res) => {
+      res.status(404).json({ error: 'Not Found' });
+    });
 
     // Start server
     server.listen(PORT, () => {
