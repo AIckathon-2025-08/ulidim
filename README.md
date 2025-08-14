@@ -1,5 +1,8 @@
 Link to the demo video: https://drive.google.com/file/d/1VCYe3CKY03eXvpTVRl5WegnMoka0P6G6/view?usp=sharing
 
+![Two Truths and a Lie Game Demo](Screen%20Recording%202025-08-14%20at%2017.35.12.gif)
+
+
 # Two Truths and a Lie Game
 
 A modern, full-stack interactive web application for playing "Two Truths and a Lie" with teams. Built with Vite, vanilla JavaScript, Phaser 3 for animations, Express.js backend, PostgreSQL database, and real-time WebSocket communication.
