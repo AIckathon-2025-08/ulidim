@@ -1,2 +1,43 @@
 memory-bank/
 isolation_rules
+node_modules/
+.tool-versions
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Build outputs
+dist/
+build/
+
+# Server specific
+server/.env
+server/node_modules/
+server/logs/

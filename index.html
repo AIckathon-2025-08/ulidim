@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Truths and a Lie</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="assets/images/favicon.png">
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.88.2/dist/phaser.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Background with TestIO squirrel -->
+        <div class="background-container">
+            <img src="assets/images/TestIO_squirel.png" alt="TestIO Squirrel" class="background-squirrel">
+        </div>
+
+        <!-- Main container -->
+        <div class="main-container">
+            <!-- Admin Setup Page -->
+            <div id="admin-page" class="page active">
+                <div class="page-content">
+                    <h1 class="page-title">Set up your game</h1>
+                    <p class="page-subtitle">Create a "Two Truths and a Lie" game for your team</p>
+
+                    <form id="admin-form" class="form">
+                        <div class="form-group">
+                            <label for="teammate-name">Teammate Name</label>
+                            <input type="text" id="teammate-name" placeholder="Enter teammate name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="teammate-picture">Profile Picture</label>
+                            <input type="file" id="teammate-picture" accept="image/*" required>
+                            <div class="upload-preview" id="picture-preview"></div>
+                        </div>
+
+                        <div class="statements-section">
+                            <h3>Three Statements</h3>
+                            <p class="hint">Two should be true, one should be a lie</p>
+
+                            <div class="form-group">
+                                <label for="statement-1">Statement 1</label>
+                                <textarea id="statement-1" placeholder="Enter first statement..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="statement-2">Statement 2</label>
+                                <textarea id="statement-2" placeholder="Enter second statement..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="statement-3">Statement 3</label>
+                                <textarea id="statement-3" placeholder="Enter third statement..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lie-statement">Which statement is the lie?</label>
+                                <select id="lie-statement" required>
+                                    <option value="">Select the lie</option>
+                                    <option value="1">Statement 1</option>
+                                    <option value="2">Statement 2</option>
+                                    <option value="3">Statement 3</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="optional-section">
+                            <h3>Optional Settings</h3>
+
+                            <div class="form-group">
+                                <label for="voting-timer">Voting Timer</label>
+                                <select id="voting-timer">
+                                    <option value="">No timer</option>
+                                    <option value="30">30 seconds</option>
+                                    <option value="60">1 minute</option>
+                                    <option value="120">2 minutes</option>
+                                    <option value="300">5 minutes</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="background-music">Background Music (MP3)</label>
+                                <input type="file" id="background-music" accept="audio/mp3">
+                                <p class="file-hint">Default: Elevator Music</p>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary">Start Game</button>
+                        </div>
+                    </form>
+
+                    <div id="game-controls" class="game-controls" style="display: none;">
+                        <div class="share-link">
+                            <h3>Game Started!</h3>
+                            <p>Share this link with participants:</p>
+                            <div class="link-container">
+                                <input type="text" id="game-link" readonly>
+                                <button id="copy-link" class="btn btn-secondary">Copy Link</button>
+                            </div>
+                        </div>
+
+                        <button id="show-lie-btn" class="btn btn-danger">Show the Lie</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voting Page -->
+            <div id="voting-page" class="page">
+                <div class="page-content">
+                    <div class="participant-info">
+                        <div class="participant-picture">
+                            <img id="participant-img" src="" alt="Participant">
+                        </div>
+                        <h2 id="participant-name">Teammate Name</h2>
+                    </div>
+
+                    <div class="voting-section">
+                        <div class="page-header">
+                            <h3>Which statement is the lie?</h3>
+                            <button class="music-toggle-btn btn btn-secondary">🔊 Music On</button>
+                        </div>
+                        <div id="timer-display" class="timer" style="display: none;"></div>
+
+                        <div class="statements">
+                            <button class="statement-option" data-statement="1">
+                                <span class="statement-number">1</span>
+                                <span class="statement-text" id="vote-statement-1"></span>
+                            </button>
+
+                            <button class="statement-option" data-statement="2">
+                                <span class="statement-number">2</span>
+                                <span class="statement-text" id="vote-statement-2"></span>
+                            </button>
+
+                            <button class="statement-option" data-statement="3">
+                                <span class="statement-number">3</span>
+                                <span class="statement-text" id="vote-statement-3"></span>
+                            </button>
+                        </div>
+
+                        <button id="submit-vote" class="btn btn-primary" disabled>Submit Vote</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Page -->
+            <div id="results-page" class="page">
+                <div class="page-content">
+                    <div class="page-header">
+                        <h2>Results</h2>
+                        <button class="music-toggle-btn btn btn-secondary">🔊 Music On</button>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="results-chart">
+                            <h3>Voting Results</h3>
+                            <div class="chart-container">
+                                <div class="result-bar" id="result-1">
+                                    <span class="result-label">Statement 1</span>
+                                    <div class="bar">
+                                        <div class="bar-fill" data-percentage="0"></div>
+                                    </div>
+                                    <span class="result-percentage">0%</span>
+                                </div>
+
+                                <div class="result-bar" id="result-2">
+                                    <span class="result-label">Statement 2</span>
+                                    <div class="bar">
+                                        <div class="bar-fill" data-percentage="0"></div>
+                                    </div>
+                                    <span class="result-percentage">0%</span>
+                                </div>
+
+                                <div class="result-bar" id="result-3">
+                                    <span class="result-label">Statement 3</span>
+                                    <div class="bar">
+                                        <div class="bar-fill" data-percentage="0"></div>
+                                    </div>
+                                    <span class="result-percentage">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="lie-reveal" class="lie-reveal" style="display: none;">
+                            <h3>The Lie Was:</h3>
+                            <div class="lie-statement" id="revealed-lie"></div>
+                        </div>
+                    </div>
+
+                    <div id="feedback-animation" class="feedback-animation"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio element for background music -->
+        <audio id="background-audio" loop>
+            <source src="assets/audio/elevator_music.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Phaser game container for animations -->
+    <div id="phaser-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
+
+    <script src="src/main.js" type="module"></script>
+</body>
+</html>

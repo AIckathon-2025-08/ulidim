@@ -1,0 +1,106 @@
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:15-alpine
+    container_name: two_truths_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: two_truths_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d two_truths_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - two_truths_network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: two_truths_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      FRONTEND_URL: http://localhost:3000
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: two_truths_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      SESSION_SECRET: your-super-secret-session-key-change-this-in-production
+    ports:
+      - "3001:3001"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - two_truths_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend (Vite Development Server)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: two_truths_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3001/api
+      VITE_WS_URL: ws://localhost:3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/server
+    networks:
+      - two_truths_network
+    depends_on:
+      - backend
+
+  # Redis for session storage (optional, for production scaling)
+  redis:
+    image: redis:7-alpine
+    container_name: two_truths_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - two_truths_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  two_truths_network:
+    driver: bridge
+    name: two_truths_network
