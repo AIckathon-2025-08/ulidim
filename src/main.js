@@ -1,5 +1,6 @@
 // Two Truths and a Lie Game - Main Application
 import { apiService } from './api.js';
+import { musicService } from './services/music.js';
 
 class TwoTruthsGame {
     constructor() {
@@ -27,7 +28,7 @@ class TwoTruthsGame {
         this.timeRemaining = 0;
         this.phaserGame = null;
         this.backgroundAudio = null;
-        this.musicEnabled = true;
+        this.musicEnabled = true; // legacy flag (proxied to musicService)
         this.realTimeUpdateInterval = null;
         this.socket = null;
         this.participantCount = 0;
@@ -39,6 +40,8 @@ class TwoTruthsGame {
         this.setupEventListeners();
         this.initializePhaser();
         this.loadDefaultMusic();
+        musicService.setEnabled(this.musicEnabled);
+        musicService.updateButtons();
         this.updateMusicButtonText();
         this.checkURLForGameId();
     }
@@ -137,6 +140,7 @@ class TwoTruthsGame {
 
     loadDefaultMusic() {
         this.backgroundAudio = document.getElementById('background-audio');
+        musicService.init(this.backgroundAudio);
     }
 
     async checkURLForGameId() {
@@ -389,40 +393,24 @@ class TwoTruthsGame {
     startBackgroundMusic() {
         if (!this.musicEnabled) return;
 
-        if (this.gameData.backgroundMusic) {
-            this.backgroundAudio.src = this.gameData.backgroundMusic;
-        }
-
-        // Auto-play with user interaction fallback
-        const playPromise = this.backgroundAudio.play();
-        if (playPromise) {
-            playPromise.catch(() => {
-                // Auto-play was prevented, will play on user interaction
-                document.addEventListener('click', () => {
-                    if (this.musicEnabled) {
-                        this.backgroundAudio.play();
-                    }
-                }, { once: true });
-            });
-        }
+        const customSrc = this.gameData.backgroundMusic || undefined;
+        musicService.maybeStartForPage(this.currentPage, customSrc);
     }
 
     stopBackgroundMusic() {
-        if (this.backgroundAudio && !this.backgroundAudio.paused) {
-            this.backgroundAudio.pause();
-        }
+        musicService.stop();
     }
 
     toggleMusic() {
         this.musicEnabled = !this.musicEnabled;
+        musicService.setEnabled(this.musicEnabled);
 
+        // Honor page gating
         if (this.musicEnabled) {
-            // Only start music if we're on voting or results page
-            if (this.currentPage === 'voting' || this.currentPage === 'results') {
-                this.startBackgroundMusic();
-            }
+            const customSrc = this.gameData.backgroundMusic || undefined;
+            musicService.maybeStartForPage(this.currentPage, customSrc);
         } else {
-            this.stopBackgroundMusic();
+            musicService.stop();
         }
 
         // Update button text
