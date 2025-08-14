@@ -81,10 +81,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-    // Setup routes and WebSocket
-    await setupRoutes();
-    setupWebSocket(io);
-
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Server Error:', error);
