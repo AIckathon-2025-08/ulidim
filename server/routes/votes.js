@@ -1,9 +1,8 @@
 import express from 'express';
 import pool from '../database/connection.js';
-// Will be injected by the server
-let io;
 
-const router = express.Router();
+export function createVoteRoutes(io) {
+  const router = express.Router();
 
 // Submit a vote
 router.post('/', async (req, res) => {
@@ -79,7 +78,7 @@ router.post('/', async (req, res) => {
     });
 
     // Broadcast updated vote counts to all clients in the game room
-    router.io?.to(`game-${game_id}`).emit('voteUpdate', {
+    io?.to(`game-${game_id}`).emit('voteUpdate', {
       gameId: game_id,
       votes,
       totalVotes: votes.reduce((a, b) => a + b, 0)
@@ -222,4 +221,5 @@ router.get('/admin/:gameId', async (req, res) => {
   }
 });
 
-export default router;
+  return router;
+}

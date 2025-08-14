@@ -65,15 +65,11 @@ if (process.env.NODE_ENV === 'production') {
 
 // Setup routes with io injection
 const setupRoutes = async () => {
-    const { default: gameRoutes } = await import('./routes/games.js');
-    const { default: voteRoutes } = await import('./routes/votes.js');
+    const { createGameRoutes } = await import('./routes/games.js');
+    const { createVoteRoutes } = await import('./routes/votes.js');
 
-    // Inject io into route modules
-    gameRoutes.io = io;
-    voteRoutes.io = io;
-
-    app.use('/api/games', gameRoutes);
-    app.use('/api/votes', voteRoutes);
+    app.use('/api/games', createGameRoutes(io));
+    app.use('/api/votes', createVoteRoutes(io));
 };
 
 // Health check endpoint

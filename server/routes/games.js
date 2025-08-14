@@ -1,10 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../database/connection.js';
-// Will be injected by the server
-let io;
 
-const router = express.Router();
+export function createGameRoutes(io) {
+  const router = express.Router();
 
 // Create a new game
 router.post('/', async (req, res) => {
@@ -77,7 +76,7 @@ router.post('/', async (req, res) => {
           );
 
           // Notify all clients about lie reveal
-          router.io?.to(`game-${gameId}`).emit('lieRevealed', {
+          io?.to(`game-${gameId}`).emit('lieRevealed', {
             gameId,
             lieIndex: lie_index,
             revealedBy: 'timer'
@@ -179,7 +178,7 @@ router.put('/:gameId/reveal-lie', async (req, res) => {
     const lieIndex = result.rows[0].lie_index;
 
     // Notify all clients about lie reveal
-    router.io?.to(`game-${gameId}`).emit('lieRevealed', {
+    io?.to(`game-${gameId}`).emit('lieRevealed', {
       gameId,
       lieIndex,
       revealedBy: 'admin'
@@ -258,4 +257,5 @@ router.get('/:gameId/stats', async (req, res) => {
   }
 });
 
-export default router;
+  return router;
+}
