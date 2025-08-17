@@ -14,15 +14,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite",
-    "legacy": "alive-server",
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "fullstack:dev": "docker-compose up -d database && npm run dev",
-    "backend:dev": "cd server && npm run dev",
-    "test": "echo \"No tests specified yet\"",
-    "lint": "echo \"No linting configured yet\""
+    "backend:dev": "cd server && npm run dev"
   },
   "keywords": [
     "game",
@@ -31,7 +28,6 @@
     "phaser"
   ],
   "devDependencies": {
-    "alive-server": "^1.3.0",
     "vite": "^7.1.2"
   },
   "dependencies": {

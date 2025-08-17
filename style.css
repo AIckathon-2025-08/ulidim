@@ -890,3 +890,343 @@ textarea {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* =============================================================================
+   AUTHENTICATION SYSTEM STYLES
+   ============================================================================= */
+
+/* Login Page Styles */
+.login-page {
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    padding: 2rem;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 25px;
+    border: 3px solid #ff6b9d;
+    box-shadow:
+        0 15px 35px rgba(255, 107, 157, 0.2),
+        0 5px 15px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.login-card::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 2px dashed rgba(78, 205, 196, 0.3);
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.login-title {
+    color: #ff6b9d;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 700;
+}
+
+.login-subtitle {
+    color: #666;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-form {
+    position: relative;
+    z-index: 2;
+}
+
+.login-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4ecdc4;
+    font-weight: 600;
+}
+
+.login-form .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 107, 157, 0.3);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.login-form .form-group input:focus {
+    outline: none;
+    border-color: #ff6b9d;
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.2);
+    transform: translateY(-2px);
+}
+
+.error-message {
+    background: rgba(255, 107, 157, 0.1);
+    border: 2px solid #ff6b9d;
+    color: #d63384;
+    padding: 0.75rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Admin Controls */
+.admin-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.admin-controls .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+#logout-btn {
+    position: absolute;
+    top: 0;
+    right: 16px;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #feca57, #45b7d1) !important;
+    background-size: 300% 300% !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    animation: gradientShift 3s ease-in-out infinite !important;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+  }
+
+  #logout-btn::before,
+  #logout-btn::after {
+    content: none !important;
+  }
+
+  #logout-btn:hover {
+    text-decoration: underline;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+  }
+/* =============================================================================
+   TIMER INTERRUPTION MODAL STYLES
+   ============================================================================= */
+
+.timer-interruption-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.timer-modal-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 3px solid #feca57;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    margin: 1rem;
+}
+
+.timer-warning-icon {
+    font-size: 3rem;
+    color: #ff6b9d;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite;
+    display: block;
+}
+
+.modal-title {
+    color: #ff6b9d;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.modal-description {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.timer-display-modal {
+    background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+    color: white;
+    padding: 1rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.modal-buttons .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6b9d, #ff4757);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+}
+
+/* Modal Animations */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .login-page {
+        padding: 1rem;
+    }
+
+    .login-card,
+    .timer-modal-card {
+        padding: 2rem;
+        margin: 1rem;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .modal-buttons .btn {
+        flex: none;
+        width: 100%;
+    }
+
+    .admin-controls {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 1rem;
+        text-align: right;
+    }
+}
+
+@media (max-width: 480px) {
+    .timer-modal-card {
+        padding: 1.5rem;
+    }
+
+    .timer-warning-icon {
+        font-size: 2rem;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+    }
+}

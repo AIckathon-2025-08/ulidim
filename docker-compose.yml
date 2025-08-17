@@ -39,6 +39,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: password
       SESSION_SECRET: your-super-secret-session-key-change-this-in-production
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: secure_password_123
     ports:
       - "3001:3001"
     depends_on:
@@ -63,8 +65,8 @@ services:
     container_name: two_truths_frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: http://localhost:3001/api
-      VITE_WS_URL: ws://localhost:3001
+      VITE_API_URL: http://backend:3001/api
+      VITE_WS_URL: ws://backend:3001
     ports:
       - "3000:3000"
     volumes:
@@ -76,28 +78,8 @@ services:
     depends_on:
       - backend
 
-  # Redis for session storage (optional, for production scaling)
-  redis:
-    image: redis:7-alpine
-    container_name: two_truths_redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - two_truths_network
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
 
 networks:

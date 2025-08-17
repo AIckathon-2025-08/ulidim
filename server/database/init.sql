@@ -13,6 +13,7 @@ CREATE DATABASE two_truths_db;
 -- Games table
 CREATE TABLE IF NOT EXISTS games (
     id VARCHAR(255) PRIMARY KEY,
+    creator_session VARCHAR(255) NOT NULL,
     teammate_name VARCHAR(255) NOT NULL,
     teammate_picture TEXT,
     statement_1 TEXT NOT NULL,

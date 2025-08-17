@@ -41,7 +41,7 @@ export const setupWebSocket = (io) => {
           joinedAt: new Date()
         });
 
-        console.log(`👥 User ${userSession} joined game ${gameId} (Admin: ${isAdmin})`);
+        console.log(`👥 User ${userSession} joined game ${gameId} (Admin: ${isAdmin}) - Room now has ${gameRooms.get(gameId).size} users`);
 
         // Send current game state to the newly joined user
         await sendGameUpdate(socket, gameId);
@@ -53,11 +53,13 @@ export const setupWebSocket = (io) => {
           timestamp: new Date()
         });
 
-        // Send updated participant count
+        // Send updated participant count to all users in the room
         const participantCount = gameRooms.get(gameId).size;
         io.to(`game-${gameId}`).emit('participantCountUpdate', {
           count: participantCount
         });
+
+        console.log(`📊 Broadcasting participant count update: ${participantCount} users in game-${gameId}`);
 
       } catch (error) {
         console.error('Error joining game:', error);
@@ -89,6 +91,22 @@ export const setupWebSocket = (io) => {
 
         if (!socket.isAdmin || socket.gameId !== gameId) {
           socket.emit('error', { message: 'Not authorized to reveal lie' });
+          return;
+        }
+
+        // Verify that this user is actually the creator of the game
+        const creatorCheck = await pool.query(
+          'SELECT creator_session FROM games WHERE id = $1',
+          [gameId]
+        );
+
+        if (creatorCheck.rows.length === 0) {
+          socket.emit('error', { message: 'Game not found' });
+          return;
+        }
+
+        if (creatorCheck.rows[0].creator_session !== socket.userSession) {
+          socket.emit('error', { message: 'Only the game creator can reveal the lie' });
           return;
         }
 

@@ -1,8 +1,3 @@
-memory-bank/
-isolation_rules
-node_modules/
-.tool-versions
-
 # Environment files
 .env
 .env.local
@@ -41,3 +36,11 @@ build/
 server/.env
 server/node_modules/
 server/logs/
+
+# memory_bank dependencies
+custom_modes/
+.cursor/
+memory-bank/
+isolation_rules
+node_modules/
+.tool-versions

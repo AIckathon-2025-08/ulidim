@@ -1,12 +1,13 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../database/connection.js';
+import { authenticateAdmin } from '../middleware/auth.js';
 
 export function createGameRoutes(io) {
   const router = express.Router();
 
-// Create a new game
-router.post('/', async (req, res) => {
+// Create a new game (Protected route - requires authentication)
+router.post('/', authenticateAdmin, async (req, res) => {
   try {
     const {
       teammate_name,
@@ -16,14 +17,15 @@ router.post('/', async (req, res) => {
       statement_3,
       lie_index,
       timer_duration,
-      background_music
+      background_music,
+      creator_session
     } = req.body;
 
     // Validate required fields
-    if (!teammate_name || !statement_1 || !statement_2 || !statement_3 || lie_index === undefined) {
+    if (!teammate_name || !statement_1 || !statement_2 || !statement_3 || lie_index === undefined || !creator_session) {
       return res.status(400).json({
         error: 'Missing required fields',
-        required: ['teammate_name', 'statement_1', 'statement_2', 'statement_3', 'lie_index']
+        required: ['teammate_name', 'statement_1', 'statement_2', 'statement_3', 'lie_index', 'creator_session']
       });
     }
 
@@ -38,14 +40,15 @@ router.post('/', async (req, res) => {
 
     const query = `
       INSERT INTO games (
-        id, teammate_name, teammate_picture, statement_1, statement_2, statement_3,
+        id, creator_session, teammate_name, teammate_picture, statement_1, statement_2, statement_3,
         lie_index, timer_duration, background_music, game_started
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
       RETURNING *
     `;
 
     const values = [
       gameId,
+      creator_session,
       teammate_name,
       teammate_picture,
       statement_1,
@@ -165,6 +168,26 @@ router.get('/:gameId', async (req, res) => {
 router.put('/:gameId/reveal-lie', async (req, res) => {
   try {
     const { gameId } = req.params;
+    const { creator_session } = req.body;
+
+    // Verify creator session is provided
+    if (!creator_session) {
+      return res.status(400).json({ error: 'Creator session required' });
+    }
+
+    // Verify that this user is actually the creator of the game
+    const creatorCheck = await pool.query(
+      'SELECT creator_session FROM games WHERE id = $1',
+      [gameId]
+    );
+
+    if (creatorCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    if (creatorCheck.rows[0].creator_session !== creator_session) {
+      return res.status(403).json({ error: 'Only the game creator can reveal the lie' });
+    }
 
     const result = await pool.query(
       'UPDATE games SET lie_revealed = true WHERE id = $1 AND lie_revealed = false RETURNING lie_index',

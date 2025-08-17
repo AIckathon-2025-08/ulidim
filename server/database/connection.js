@@ -65,6 +65,32 @@ const initSchema = async () => {
       CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at);
     `);
 
+    // Migration: Add creator_session column to existing games table
+    try {
+      await client.query(`
+        ALTER TABLE games ADD COLUMN IF NOT EXISTS creator_session VARCHAR(255);
+      `);
+
+      // Update existing games without creator_session (set to a default value)
+      await client.query(`
+        UPDATE games SET creator_session = 'legacy_admin' WHERE creator_session IS NULL;
+      `);
+
+      // Make creator_session NOT NULL after migration
+      await client.query(`
+        ALTER TABLE games ALTER COLUMN creator_session SET NOT NULL;
+      `);
+
+      // Create index for creator_session AFTER ensuring the column exists
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_games_creator_session ON games(creator_session);
+      `);
+
+      console.log('✅ Database migration completed: added creator_session field');
+    } catch (migrationError) {
+      console.log('ℹ️ Migration already applied or column exists:', migrationError.message);
+    }
+
     // Create updated_at trigger function
     await client.query(`
       CREATE OR REPLACE FUNCTION update_updated_at_column()

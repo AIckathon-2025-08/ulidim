@@ -33,14 +33,49 @@ app.use(helmet({
   contentSecurityPolicy: false, // Allow for development
 }));
 
-// Rate limiting
-const limiter = rateLimit({
+// General rate limiting (more generous)
+const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  max: 500, // limit each IP to 500 requests per windowMs
+  message: {
+    success: false,
+    error: {
+      message: 'Too many requests from this IP, please try again later.',
+      code: 'RATE_LIMIT_EXCEEDED'
+    },
+    message: 'Too many requests from this IP, please try again later.'
+  }
 });
 
-app.use(limiter);
+// Stricter rate limiting for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limit each IP to 50 auth requests per windowMs
+  message: {
+    success: false,
+    error: {
+      message: 'Too many authentication attempts, please try again later.',
+      code: 'AUTH_RATE_LIMIT_EXCEEDED'
+    },
+    message: 'Too many authentication attempts, please try again later.'
+  }
+});
+
+// Very lenient rate limiting for stats endpoints (real-time updates)
+const statsLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // limit each IP to 100 stats requests per minute
+  message: {
+    success: false,
+    error: {
+      message: 'Too many stats requests, please slow down.',
+      code: 'STATS_RATE_LIMIT_EXCEEDED'
+    },
+    message: 'Too many stats requests, please slow down.'
+  }
+});
+
+app.use(generalLimiter);
 
 // CORS
 app.use(cors({
@@ -68,9 +103,17 @@ if (process.env.NODE_ENV === 'production') {
 const setupRoutes = async () => {
     const { createGameRoutes } = await import('./routes/games.js');
     const { createVoteRoutes } = await import('./routes/votes.js');
+    const authRoutes = await import('./routes/auth.js');
 
+    // Authentication routes (with stricter rate limiting)
+    app.use('/api/auth', authLimiter, authRoutes.default);
+
+    // Game and vote routes (require io for real-time features)
     app.use('/api/games', createGameRoutes(io));
     app.use('/api/votes', createVoteRoutes(io));
+
+    // Apply stats rate limiter to stats endpoints specifically
+    app.use('/api/games/*/stats', statsLimiter);
 };
 
 // Health check endpoint
@@ -102,9 +145,49 @@ async function startServer() {
       });
     });
 
+    // JSON parsing error handler (must be AFTER routes)
+    app.use((err, req, res, next) => {
+      if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Invalid JSON in request body',
+            code: 'INVALID_JSON'
+          },
+          message: 'Invalid JSON in request body'
+        });
+      }
+      next(err);
+    });
+
+    // Global error handler (registered AFTER routes)
+    app.use((err, req, res, next) => {
+      console.error(`❌ ${req.method} ${req.path}:`, {
+        error: err.message,
+        stack: err.stack,
+        timestamp: new Date().toISOString()
+      });
+
+      res.status(500).json({
+        success: false,
+        error: {
+          message: 'Internal server error',
+          code: 'INTERNAL_ERROR'
+        },
+        message: 'Internal server error'
+      });
+    });
+
     // 404 handler (registered AFTER routes)
     app.use((req, res) => {
-      res.status(404).json({ error: 'Not Found' });
+      res.status(404).json({
+        success: false,
+        error: {
+          message: 'Not Found',
+          code: 'NOT_FOUND'
+        },
+        message: 'Not Found'
+      });
     });
 
     // Start server

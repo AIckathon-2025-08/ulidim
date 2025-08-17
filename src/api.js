@@ -1,13 +1,14 @@
 // API Service for Two Truths and a Lie Game
 class ApiService {
     constructor() {
-        // Normalize API base to always include /api
-        const rawApiBase = (import.meta.env?.VITE_API_URL || 'http://localhost:3001');
-        const normalizedApiBase = rawApiBase.replace(/\/$/, '');
-        this.baseURL = normalizedApiBase.endsWith('/api') ? normalizedApiBase : `${normalizedApiBase}/api`;
+        // In browser, always use relative URLs to go through Vite proxy
+        // This works both in dev (proxy) and production (same origin)
+        this.baseURL = '/api';
 
-        // WebSocket base (no /api segment)
-        this.wsURL = (import.meta.env?.VITE_WS_URL || 'ws://localhost:3001').replace(/\/$/, '');
+        // WebSocket URL - use the current origin but switch to ws/wss protocol
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host;
+        this.wsURL = `${protocol}//${host}`;
         this.socket = null;
         this.userSession = this.getUserSession();
 
@@ -26,12 +27,45 @@ class ApiService {
         return session;
     }
 
+    // Get authentication headers for admin requests
+    getAuthHeaders() {
+        const adminSession = sessionStorage.getItem('adminSession');
+        if (adminSession) {
+            return {
+                'Authorization': `Bearer ${adminSession}`
+            };
+        }
+        return {};
+    }
+
+    // Check if endpoint requires authentication
+    needsAuth(endpoint) {
+        const protectedEndpoints = [
+            '/games',  // POST /games (create game)
+            // Note: GET /games/:id, voting, and other endpoints don't require auth
+        ];
+
+        // Check if this is a POST to /games (create game)
+        return protectedEndpoints.some(protectedPath => {
+            if (protectedPath === '/games') {
+                // Only protect POST requests to /games
+                return endpoint === '/games';
+            }
+            return endpoint.startsWith(protectedPath);
+        });
+    }
+
     // HTTP request helper
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
+
+        // Add authentication headers for protected endpoints
+        const authHeaders = this.needsAuth(endpoint) ? this.getAuthHeaders() : {};
+
         const config = {
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders,
                 ...options.headers
             },
             ...options
@@ -43,7 +77,8 @@ class ApiService {
 
         console.log(`🌐 Making API request to: ${url}`, {
             method: config.method || 'GET',
-            body: config.body
+            body: config.body,
+            hasAuth: Object.keys(authHeaders).length > 0
         });
 
         try {
@@ -61,14 +96,30 @@ class ApiService {
 
             if (!response.ok) {
                 console.error(`❌ API Error:`, data);
+
+                // Don't throw error for "already revealed" case, just log it
+                if (response.status === 404 && data.error && data.error.includes('already revealed')) {
+                    console.warn('⚠️ Lie already revealed on server, this is expected');
+                    return { success: false, alreadyRevealed: true, message: data.error };
+                }
+
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
 
             console.log(`✅ API Success:`, data);
             return data;
         } catch (error) {
-            console.error(`❌ API Request Failed (${endpoint}):`, error);
-            throw error;
+            // Enhance error information for better retry logic
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                console.error(`❌ Network Error (${endpoint}):`, 'Failed to fetch - server may be unavailable');
+                throw new Error(`Network error: Failed to fetch from ${endpoint}. Server may be unavailable.`);
+            } else if (error.name === 'AbortError') {
+                console.error(`❌ Request Timeout (${endpoint}):`, error);
+                throw new Error(`Network error: Request timeout for ${endpoint}`);
+            } else {
+                console.error(`❌ API Request Failed (${endpoint}):`, error);
+                throw error;
+            }
         }
     }
 
@@ -86,7 +137,10 @@ class ApiService {
 
     async revealLie(gameId) {
         return this.request(`/games/${gameId}/reveal-lie`, {
-            method: 'PUT'
+            method: 'PUT',
+            body: {
+                creator_session: this.userSession
+            }
         });
     }
 

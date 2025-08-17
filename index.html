@@ -20,21 +20,52 @@
 
         <!-- Main container -->
         <div class="main-container">
+            <!-- Login Page -->
+            <div id="login-page" class="page active" data-cy="login-page">
+                <div class="login-page">
+                    <div class="login-card" data-cy="login-card">
+                        <h1 class="login-title" data-cy="login-title">🎮 Admin Access</h1>
+                        <p class="login-subtitle" data-cy="login-subtitle">Authenticate to create and manage games</p>
+
+                        <form id="login-form" class="login-form">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" data-cy="username" placeholder="Enter username" required autocomplete="username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" data-cy="password" placeholder="Enter password" required autocomplete="current-password">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="login-btn" data-cy="login-btn">
+                                Login
+                            </button>
+
+                            <div id="login-error" class="error-message" data-cy="login-error" style="display: none;"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Admin Setup Page -->
-            <div id="admin-page" class="page active">
+            <div id="admin-page" class="page" data-cy="admin-page">
                 <div class="page-content">
+                    <div class="admin-header">
+                        <button id="logout-btn" class="btn btn-secondary" data-cy="logout-btn">Logout</button>
+                    </div>
                     <h1 class="page-title">Set up your game</h1>
                     <p class="page-subtitle">Create a "Two Truths and a Lie" game for your team</p>
 
                     <form id="admin-form" class="form">
                         <div class="form-group">
                             <label for="teammate-name">Teammate Name</label>
-                            <input type="text" id="teammate-name" placeholder="Enter teammate name" required>
+                            <input type="text" id="teammate-name" data-cy="teammate-name" placeholder="Enter teammate name" required>
                         </div>
 
                         <div class="form-group">
                             <label for="teammate-picture">Profile Picture</label>
-                            <input type="file" id="teammate-picture" accept="image/*" required>
+                            <input type="file" id="teammate-picture" data-cy="teammate-picture" accept="image/*" required>
                             <div class="upload-preview" id="picture-preview"></div>
                         </div>
 
@@ -44,22 +75,22 @@
 
                             <div class="form-group">
                                 <label for="statement-1">Statement 1</label>
-                                <textarea id="statement-1" placeholder="Enter first statement..." required></textarea>
+                                <textarea id="statement-1" data-cy="statement-1" placeholder="Enter first statement..." required></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="statement-2">Statement 2</label>
-                                <textarea id="statement-2" placeholder="Enter second statement..." required></textarea>
+                                <textarea id="statement-2" data-cy="statement-2" placeholder="Enter second statement..." required></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="statement-3">Statement 3</label>
-                                <textarea id="statement-3" placeholder="Enter third statement..." required></textarea>
+                                <textarea id="statement-3" data-cy="statement-3" placeholder="Enter third statement..." required></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="lie-statement">Which statement is the lie?</label>
-                                <select id="lie-statement" required>
+                                <select id="lie-statement" data-cy="lie-selector" required>
                                     <option value="">Select the lie</option>
                                     <option value="1">Statement 1</option>
                                     <option value="2">Statement 2</option>
@@ -73,7 +104,7 @@
 
                             <div class="form-group">
                                 <label for="voting-timer">Voting Timer</label>
-                                <select id="voting-timer">
+                                <select id="voting-timer" data-cy="timer-duration">
                                     <option value="">No timer</option>
                                     <option value="30">30 seconds</option>
                                     <option value="60">1 minute</option>
@@ -84,39 +115,43 @@
 
                             <div class="form-group">
                                 <label for="background-music">Background Music (MP3)</label>
-                                <input type="file" id="background-music" accept="audio/mp3">
+                                <input type="file" id="background-music" data-cy="music-upload" accept="audio/mp3">
                                 <p class="file-hint">Default: Elevator Music</p>
                             </div>
                         </div>
 
                         <div class="button-group">
-                            <button type="submit" class="btn btn-primary">Start Game</button>
+                            <button type="submit" class="btn btn-primary" data-cy="create-game">Start Game</button>
                         </div>
                     </form>
 
-                    <div id="game-controls" class="game-controls" style="display: none;">
+                    <div id="game-controls" class="game-controls" data-cy="game-controls" style="display: none;">
                         <div class="share-link">
-                            <h3>Game Started!</h3>
+                            <h3 data-cy="game-created-message">Game Started!</h3>
                             <p>Share this link with participants:</p>
                             <div class="link-container">
-                                <input type="text" id="game-link" readonly>
+                                <input type="text" id="game-link" data-cy="game-link" readonly>
                                 <button id="copy-link" class="btn btn-secondary">Copy Link</button>
                             </div>
                         </div>
 
-                        <button id="show-lie-btn" class="btn btn-danger">Show the Lie</button>
+                        <button id="show-lie-btn" class="btn btn-danger" data-cy="reveal-lie-btn">Show the Lie</button>
+                        <div class="game-stats" data-cy="game-stats">
+                            <div data-cy="total-votes">Total Votes: <span id="vote-count">0</span></div>
+                            <div data-cy="vote-distribution"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Voting Page -->
-            <div id="voting-page" class="page">
+            <div id="voting-page" class="page" data-cy="voting-page">
                 <div class="page-content">
                     <div class="participant-info">
                         <div class="participant-picture">
                             <img id="participant-img" src="" alt="Participant">
                         </div>
-                        <h2 id="participant-name">Teammate Name</h2>
+                        <h2 id="participant-name" data-cy="player-name">Teammate Name</h2>
                     </div>
 
                     <div class="voting-section">
@@ -124,26 +159,29 @@
                             <h3>Which statement is the lie?</h3>
                             <button class="music-toggle-btn btn btn-secondary">🔊 Music On</button>
                         </div>
-                        <div id="timer-display" class="timer" style="display: none;"></div>
+                        <div id="timer-display" class="timer" data-cy="timer-display" style="display: none;"></div>
 
                         <div class="statements">
-                            <button class="statement-option" data-statement="1">
+                            <button class="statement-option" data-statement="1" data-cy="vote-option-0">
                                 <span class="statement-number">1</span>
-                                <span class="statement-text" id="vote-statement-1"></span>
+                                <span class="statement-text" id="vote-statement-1" data-cy="statement-0"></span>
                             </button>
 
-                            <button class="statement-option" data-statement="2">
+                            <button class="statement-option" data-statement="2" data-cy="vote-option-1">
                                 <span class="statement-number">2</span>
-                                <span class="statement-text" id="vote-statement-2"></span>
+                                <span class="statement-text" id="vote-statement-2" data-cy="statement-1"></span>
                             </button>
 
-                            <button class="statement-option" data-statement="3">
+                            <button class="statement-option" data-statement="3" data-cy="vote-option-2">
                                 <span class="statement-number">3</span>
-                                <span class="statement-text" id="vote-statement-3"></span>
+                                <span class="statement-text" id="vote-statement-3" data-cy="statement-2"></span>
                             </button>
                         </div>
 
-                        <button id="submit-vote" class="btn btn-primary" disabled>Submit Vote</button>
+                        <button id="submit-vote" class="btn btn-primary" data-cy="submit-vote" disabled>Submit Vote</button>
+                        <div id="vote-confirmation" data-cy="vote-submitted" style="display: none;">
+                            <p data-cy="thank-you-message">Thank you for voting!</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,8 +241,30 @@
         </audio>
     </div>
 
+    <!-- Timer Interruption Modal -->
+    <div id="timer-interruption-modal" class="timer-interruption-modal" data-cy="timer-interruption-modal" style="display: none;">
+        <div class="timer-modal-card">
+            <div class="timer-warning-icon">⏰</div>
+            <h2 class="modal-title" data-cy="modal-title">Interrupt Timer?</h2>
+            <p class="modal-description" data-cy="modal-description">
+                The timer is still running. Are you sure you want to reveal the lie now?
+            </p>
+            <div class="timer-display-modal">
+                <span id="modal-timer-remaining">2:30</span> remaining
+            </div>
+            <div class="modal-buttons">
+                <button id="timer-continue-btn" class="btn btn-secondary" data-cy="continue-timer-btn">
+                    No, Continue Timer
+                </button>
+                <button id="timer-interrupt-btn" class="btn btn-danger" data-cy="force-reveal-btn">
+                    Yes, Reveal Lie
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Phaser game container for animations -->
-    <div id="phaser-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
+    <div id="phaser-container" data-cy="phaser-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
 
     <script src="src/main.js" type="module"></script>
 </body>

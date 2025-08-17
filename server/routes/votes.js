@@ -78,11 +78,15 @@ router.post('/', async (req, res) => {
     });
 
     // Broadcast updated vote counts to all clients in the game room
-    io?.to(`game-${game_id}`).emit('voteUpdate', {
+    const voteUpdateData = {
       gameId: game_id,
       votes,
-      totalVotes: votes.reduce((a, b) => a + b, 0)
-    });
+      totalVotes: votes.reduce((a, b) => a + b, 0),
+      timestamp: new Date()
+    };
+
+    console.log(`📡 Broadcasting vote update to game-${game_id}:`, voteUpdateData);
+    io?.to(`game-${game_id}`).emit('voteUpdate', voteUpdateData);
 
     res.status(201).json({
       success: true,
