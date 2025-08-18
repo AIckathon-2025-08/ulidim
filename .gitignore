@@ -40,7 +40,7 @@ server/logs/
 # memory_bank dependencies
 custom_modes/
 .cursor/
-memory-bank/
+memory_bank/
 isolation_rules
 node_modules/
 .tool-versions
