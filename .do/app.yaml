@@ -1,30 +1,18 @@
 name: two-truths-and-a-lie
 services:
-- name: frontend
-  type: static_site
-  source_dir: /
-  build_command: npm run build
-  environment_slug: node-js
-  routes:
-  - path: /
-  env:
-  - key: NODE_ENV
-    value: production
-  - key: VITE_API_URL
-    value: ${backend.PUBLIC_URL}/api
-  - key: VITE_WS_URL
-    value: ${backend.PUBLIC_URL}
-
 - name: backend
   type: service
-  source_dir: ./server
-  build_command: npm install
-  run_command: npm start
+  source_dir: /
+  build_command: cd server && npm install
+  run_command: cd server && npm start
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
   health_check:
     http_path: /api/health
+  routes:
+  - path: /api
+    preserve_path_prefix: true
   env:
   - key: NODE_ENV
     value: production
@@ -48,6 +36,21 @@ services:
     value: admin
   - key: ADMIN_PASSWORD
     value: secure_password_123
+
+- name: frontend
+  type: static_site
+  source_dir: /
+  build_command: npm run build
+  environment_slug: node-js
+  routes:
+  - path: /
+  env:
+  - key: NODE_ENV
+    value: production
+  - key: VITE_API_URL
+    value: ${backend.PUBLIC_URL}/api
+  - key: VITE_WS_URL
+    value: ${backend.PUBLIC_URL}
 
 databases:
 - name: db
