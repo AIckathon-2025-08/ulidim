@@ -12,6 +12,8 @@ services:
   health_check:
     http_path: /
   env:
+  - key: NODE_ENV
+    value: production
   - key: VITE_API_URL
     value: ${backend.PUBLIC_URL}/api
   - key: VITE_WS_URL
