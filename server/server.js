@@ -97,14 +97,6 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, '../dist')));
-  
-  // Serve index.html for all non-API routes (SPA support)
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-    res.sendFile(join(__dirname, '../dist/index.html'));
-  });
 }
 
 // Setup routes with io injection
@@ -143,6 +135,13 @@ async function startServer() {
     // Setup routes and WebSocket
     await setupRoutes();
     setupWebSocket(io);
+
+    // SPA catch-all route (MUST be after API routes)
+    if (process.env.NODE_ENV === 'production') {
+      app.get('*', (req, res) => {
+        res.sendFile(join(__dirname, '../dist/index.html'));
+      });
+    }
 
     // Error handling middleware (must be registered AFTER routes)
     app.use((error, req, res, next) => {
