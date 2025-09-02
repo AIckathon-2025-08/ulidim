@@ -27,10 +27,8 @@
     "team-building",
     "phaser"
   ],
-  "devDependencies": {
-    "vite": "^7.1.2"
-  },
   "dependencies": {
+    "vite": "^7.1.2",
     "phaser": "^3.88.2",
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4"
