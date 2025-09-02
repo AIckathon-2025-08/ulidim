@@ -34,13 +34,13 @@ services:
   - key: ADMIN_PASSWORD
     value: secure_password_123
 
+static_sites:
 - name: web
-  type: static_site
   source_dir: /
   build_command: npm run build
   output_dir: dist
   index_document: index.html
-  error_document: index.html
+  environment_slug: node-js
   envs:
   - key: NODE_ENV
     value: production
