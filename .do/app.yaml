@@ -1,16 +1,12 @@
 name: two-truths-and-a-lie
 services:
 - name: frontend
+  type: static_site
   source_dir: /
   build_command: npm run build
-  run_command: npm run preview
   environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
   routes:
   - path: /
-  health_check:
-    http_path: /
   env:
   - key: NODE_ENV
     value: production
@@ -20,7 +16,8 @@ services:
     value: ${backend.PUBLIC_URL}
 
 - name: backend
-  source_dir: /server
+  type: service
+  source_dir: ./server
   build_command: npm install
   run_command: npm start
   environment_slug: node-js
