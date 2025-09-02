@@ -1,5 +1,18 @@
 name: two-truths-and-a-lie
 
+ingress:
+  rules:
+  - match:
+      path:
+        prefix: /api
+    component:
+      name: api
+  - match:
+      path:
+        prefix: /
+    component:
+      name: web
+
 services:
 - name: api
   http_port: 8080
