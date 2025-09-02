@@ -1,9 +1,9 @@
 name: two-truths-and-a-lie
 services:
-- name: backend
+- name: app
   type: service
   source_dir: /
-  build_command: cd server && npm install
+  build_command: npm run build && cd server && npm install
   run_command: cd server && npm start
   environment_slug: node-js
   instance_count: 1
@@ -11,15 +11,14 @@ services:
   health_check:
     http_path: /api/health
   routes:
-  - path: /api
-    preserve_path_prefix: true
+  - path: /
   env:
   - key: NODE_ENV
     value: production
   - key: PORT
     value: "8080"
   - key: FRONTEND_URL
-    value: ${frontend.PUBLIC_URL}
+    value: https://whale-app-nbqp6.ondigitalocean.app
   - key: DB_HOST
     value: ${db.HOSTNAME}
   - key: DB_PORT
@@ -36,21 +35,6 @@ services:
     value: admin
   - key: ADMIN_PASSWORD
     value: secure_password_123
-
-- name: frontend
-  type: static_site
-  source_dir: /
-  build_command: npm run build
-  environment_slug: node-js
-  routes:
-  - path: /
-  env:
-  - key: NODE_ENV
-    value: production
-  - key: VITE_API_URL
-    value: ${backend.PUBLIC_URL}/api
-  - key: VITE_WS_URL
-    value: ${backend.PUBLIC_URL}
 
 databases:
 - name: db
