@@ -10,6 +10,10 @@ services:
   run_command: npm start
   health_check:
     http_path: /api/health
+  github:
+    repo: AIckathon-2025-08/ulidim
+    branch: hosting
+    deploy_on_push: true
   envs:
   - key: NODE_ENV
     value: production
@@ -41,6 +45,10 @@ static_sites:
   output_dir: dist
   index_document: index.html
   environment_slug: node-js
+  github:
+    repo: AIckathon-2025-08/ulidim
+    branch: hosting
+    deploy_on_push: true
   envs:
   - key: NODE_ENV
     value: production
