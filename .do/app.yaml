@@ -35,15 +35,15 @@ services:
   - key: FRONTEND_URL
     value: ${web.PUBLIC_URL}
   - key: DB_HOST
-    value: ${db.HOSTNAME}
+    value: ${two-truths-and-a-lie.HOSTNAME}
   - key: DB_PORT
-    value: ${db.PORT}
+    value: ${two-truths-and-a-lie.PORT}
   - key: DB_NAME
-    value: ${db.DATABASE}
+    value: ${two-truths-and-a-lie.DATABASE}
   - key: DB_USER
-    value: ${db.USERNAME}
+    value: ${two-truths-and-a-lie.USERNAME}
   - key: DB_PASSWORD
-    value: ${db.PASSWORD}
+    value: ${two-truths-and-a-lie.PASSWORD}
   - key: SESSION_SECRET
     value: your-super-secret-session-key-change-this-in-production
   - key: ADMIN_USERNAME
@@ -71,6 +71,6 @@ static_sites:
     value: ${api.PUBLIC_URL}
 
 databases:
-- name: db
+- name: two-truths-and-a-lie
   engine: PG
-  version: "15"
+  version: "17"
