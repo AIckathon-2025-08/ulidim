@@ -70,7 +70,7 @@ static_sites:
   - key: VITE_WS_URL
     value: ${api.PUBLIC_URL}
 
-databases:
-- name: two-truths-and-a-lie
-  engine: PG
-  version: "17"
+# databases:
+# - name: two-truths-and-a-lie
+#   engine: PG
+#   version: "17"
