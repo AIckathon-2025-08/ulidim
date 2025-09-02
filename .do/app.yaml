@@ -2,16 +2,15 @@ name: two-truths-and-a-lie
 services:
 - name: frontend
   source_dir: /
-  github:
-    repo: your-username/two-truths-and-a-lie
-    branch: master
-  run_command: npm run build && npm run preview
+  build_command: npm run build
+  run_command: npm run preview
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
   routes:
   - path: /
-  http_port: 3000
+  health_check:
+    http_path: /
   env:
   - key: VITE_API_URL
     value: ${backend.PUBLIC_URL}/api
@@ -20,19 +19,17 @@ services:
 
 - name: backend
   source_dir: /server
-  github:
-    repo: your-username/two-truths-and-a-lie
-    branch: master
   run_command: npm start
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 3001
+  health_check:
+    http_path: /api/health
   env:
   - key: NODE_ENV
     value: production
   - key: PORT
-    value: "3001"
+    value: "8080"
   - key: FRONTEND_URL
     value: ${frontend.PUBLIC_URL}
   - key: DB_HOST
