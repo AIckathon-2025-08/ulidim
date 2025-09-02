@@ -1,14 +1,17 @@
 // API Service for Two Truths and a Lie Game
 class ApiService {
     constructor() {
-        // In browser, always use relative URLs to go through Vite proxy
-        // This works both in dev (proxy) and production (same origin)
-        this.baseURL = '/api';
+        // Use environment variables in production, fallback to relative URLs
+        this.baseURL = import.meta.env.VITE_API_URL || '/api';
 
-        // WebSocket URL - use the current origin but switch to ws/wss protocol
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.host;
-        this.wsURL = `${protocol}//${host}`;
+        // WebSocket URL - use environment variable or derive from current location
+        if (import.meta.env.VITE_WS_URL) {
+            this.wsURL = import.meta.env.VITE_WS_URL;
+        } else {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            this.wsURL = `${protocol}//${host}`;
+        }
         this.socket = null;
         this.userSession = this.getUserSession();
 

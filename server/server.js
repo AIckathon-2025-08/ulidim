@@ -97,6 +97,14 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, '../dist')));
+  
+  // Serve index.html for all non-API routes (SPA support)
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.sendFile(join(__dirname, '../dist/index.html'));
+  });
 }
 
 // Setup routes with io injection
