@@ -34,16 +34,6 @@ services:
     value: "8080"
   - key: FRONTEND_URL
     value: ${web.PUBLIC_URL}
-  - key: DB_HOST
-    value: ${two-truths-and-a-lie.HOSTNAME}
-  - key: DB_PORT
-    value: ${two-truths-and-a-lie.PORT}
-  - key: DB_NAME
-    value: ${two-truths-and-a-lie.DATABASE}
-  - key: DB_USER
-    value: ${two-truths-and-a-lie.USERNAME}
-  - key: DB_PASSWORD
-    value: ${two-truths-and-a-lie.PASSWORD}
   - key: SESSION_SECRET
     value: your-super-secret-session-key-change-this-in-production
   - key: ADMIN_USERNAME
