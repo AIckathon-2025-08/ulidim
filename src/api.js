@@ -182,7 +182,7 @@ class ApiService {
 
                 const socket_url = this.wsURL.replace('ws://', 'http://').replace('wss://', 'https://');
                 console.log('🔌 Connecting to WebSocket at:', socket_url);
-                this.socket = io(socket_url, { path: '/api/socket.io' });
+                this.socket = io(socket_url, { path: '/api/api/socket.io' });
 
                 this.socket.on('connect', () => {
                     console.log('✅ WebSocket connected');
