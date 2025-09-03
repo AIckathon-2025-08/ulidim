@@ -226,7 +226,7 @@ class TwoTruthsGame {
         try {
             console.log('🔐 Validating session...');
 
-            const response = await fetch('/api/auth/validate', {
+            const response = await fetch('/api/api/auth/validate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ class TwoTruthsGame {
         try {
             console.log('🔐 Attempting login...');
 
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -319,7 +319,7 @@ class TwoTruthsGame {
             console.log('🔐 Logging out...');
 
             if (this.adminSession) {
-                await fetch('/api/auth/logout', {
+                await fetch('/api/api/auth/logout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
