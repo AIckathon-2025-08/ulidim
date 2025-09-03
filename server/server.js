@@ -20,7 +20,7 @@ const __dirname = dirname(__filename);
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
-  path: '/ws/socket.io',
+  path: '/api/ws/socket.io',
   cors: {
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"]
