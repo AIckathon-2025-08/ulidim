@@ -10,7 +10,7 @@ class ApiService {
         } else {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const host = window.location.host;
-            this.wsURL = `${protocol}//${host}/api`;
+            this.wsURL = `${protocol}//${host}`;
         }
         this.socket = null;
         this.userSession = this.getUserSession();
