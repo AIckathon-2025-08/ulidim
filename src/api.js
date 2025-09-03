@@ -180,9 +180,10 @@ class ApiService {
                     throw new Error('Socket.IO client not loaded');
                 }
 
-                const socket_url = this.wsURL.replace('ws://', 'http://').replace('wss://', 'https://');
-                console.log('🔌 Connecting to WebSocket at:', socket_url);
-                this.socket = io(socket_url, { path: '/api/ws/socket.io' });
+                // uber bad but Im so tired...
+                const socket_url = "https://two-truths-and-a-lie-cjkox.ondigitalocean.app"
+
+                this.socket = io(socket_url, { path: '/api/ws', transports: ['websocket'] });
 
                 this.socket.on('connect', () => {
                     console.log('✅ WebSocket connected');
