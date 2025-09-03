@@ -10,7 +10,11 @@ const pool = new Pool(
   process.env.DATABASE_URL ? {
     // Use DATABASE_URL if available (DigitalOcean managed database)
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    ssl: process.env.NODE_ENV === 'production' ? { 
+      require: true, 
+      rejectUnauthorized: true,
+      ca: process.env.DB_CA_CERT 
+    } : false,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
@@ -24,7 +28,11 @@ const pool = new Pool(
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    ssl: process.env.NODE_ENV === 'production' ? { 
+      require: true, 
+      rejectUnauthorized: true,
+      ca: process.env.DB_CA_CERT 
+    } : false,
   }
 );
 
