@@ -4,6 +4,9 @@
 .env.production
 .env.staging
 
+# DigitalOcean deployment configuration
+.do/app.yaml
+
 # Database
 *.db
 *.sqlite
