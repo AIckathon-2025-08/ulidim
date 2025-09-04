@@ -171,23 +171,23 @@ router.put('/:gameId/reveal-lie', async (req, res) => {
     const { creator_session } = req.body;
 
     // Verify creator session is provided
-    if (!creator_session) {
-      return res.status(400).json({ error: 'Creator session required' });
-    }
+    //if (!creator_session) {
+    //  return res.status(400).json({ error: 'Creator session required' });
+    //}
 
     // Verify that this user is actually the creator of the game
-    const creatorCheck = await pool.query(
-      'SELECT creator_session FROM games WHERE id = $1',
-      [gameId]
-    );
+    //const creatorCheck = await pool.query(
+    //  'SELECT creator_session FROM games WHERE id = $1',
+    //  [gameId]
+    //);
 
-    if (creatorCheck.rows.length === 0) {
-      return res.status(404).json({ error: 'Game not found' });
-    }
+    //if (creatorCheck.rows.length === 0) {
+    //  return res.status(404).json({ error: 'Game not found' });
+    //}
 
-    if (creatorCheck.rows[0].creator_session !== creator_session) {
-      return res.status(403).json({ error: 'Only the game creator can reveal the lie' });
-    }
+    //if (creatorCheck.rows[0].creator_session !== creator_session) {
+    //  return res.status(403).json({ error: 'Only the game creator can reveal the lie' });
+    //}
 
     const result = await pool.query(
       'UPDATE games SET lie_revealed = true WHERE id = $1 AND lie_revealed = false RETURNING lie_index',
